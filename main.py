@@ -4,8 +4,13 @@ import socket
 
 TRIG = 21
 ECHO = 20
+SERVO_PIN = 18  # GPIO pin for the servo motor
 
 GPIO.setmode(GPIO.BCM)
+GPIO.setup(SERVO_PIN, GPIO.OUT)
+
+# Create a PWM object
+pwm = GPIO.PWM(SERVO_PIN, 50)  # 50 Hz frequency for the servo motor
 
 def calculate_distance():
     GPIO.setup(TRIG, GPIO.OUT)
@@ -34,6 +39,9 @@ def send_data(client_socket):
     try:
         while True:
             for angle in range(15, 166):
+                # Control the servo motor based on the angle value
+                pwm.start(angle)
+                
                 distance = calculate_distance()
                 data = str(angle) + "," + str(distance) + "."
                 print(data, end="", flush=True)
@@ -41,6 +49,9 @@ def send_data(client_socket):
                 time.sleep(0.1)
             
             for angle in range(165, 14, -1):
+                # Control the servo motor based on the angle value
+                pwm.start(angle)
+                
                 distance = calculate_distance()
                 data = str(angle) + "," + str(distance) + "."
                 print(data, end="", flush=True)
